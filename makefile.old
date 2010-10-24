@@ -1,0 +1,54 @@
+# protocol01
+# Dhananjay Raghunathan
+#
+
+#The arm-linux compiler
+CC=arm-linux-gcc
+#The arm linux linker
+LD=arm-linux-ld
+#The arm linux archiver
+AR=arm-linux-ar
+
+#Your program name
+PROGNAME=activeCamo
+
+#CUSTOM_INCLUDES_FOLDER=/home/rdjay/work/helper_includes
+#The list of objects to link
+SRC=spy.c camoControlInterface.c trackerLib.c
+
+#The path to the libkorebot.so file
+LIBPATH=/usr/local/libkorebot-1.12/build-korebot/lib 
+#The path to the libkorebot.h file
+INCPATH+= -I /usr/local/libkorebot-1.12/build-korebot/include \
+	-I /home/rghunter/khepera3toolbox/Modules/commandline \
+	-I /home/rghunter/khepera3toolbox/Modules/khepera3 \
+	-I /home/rghunter/khepera3toolbox/Modules/i2cal \
+	-I /home/rghunter/protocol01 \
+	-I /home/rghunter/khepera3toolbox/Modules/odometry_track \
+	-I /home/rghunter/khepera3toolbox/Modules/sensorGrab
+
+MODULES+=/home/rghunter/khepera3toolbox/Modules/commandline/commandline.o \
+	/home/rghunter/khepera3toolbox/Modules/khepera3/*.o \
+	/home/rghunter/khepera3toolbox/Modules/i2cal/i2cal.a \
+	/home/rghunter/khepera3toolbox/Modules/odometry_track/odometry_track.a \
+	/home/rghunter/khepera3toolbox/Modules/nmea/nmea.a \
+	/home/rghunter/khepera3toolbox/Modules/sensorGrab/sensorGrab.o
+
+OBJ  += $(MODULES)
+CFLAGS= $(INCPATH) 
+LDFLAGS+= -lkorebot -L$(LIBPATH) -lm 
+
+# Default rules
+.PHONY: clean all 
+
+all : $(PROGNAME) 
+
+$(PROGNAME) : $(SRC) $(HDR) Makefile 
+	$(CC) -o $(PROGNAME) -lkorebot $(SRC) $(OBJ) $(CFLAGS) $(LDFLAGS) -Wall
+
+clean : 
+	@echo removing object files
+	@rm -f *.o
+	@rm -f $(PROGNAME)
+
+#include Makefile.include
